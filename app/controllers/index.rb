@@ -37,11 +37,9 @@ get '/new_tweet' do
 end
 
 post '/new_tweet' do
-  user = User.find(session[:user_id])
-  tweet_content = params[:tweet_content]
-  tweet = Twitter::Client.new(
-  :oauth_token => user.oauth_token,
-  :oauth_token_secret => user.oauth_secret
-  ).update(tweet_content)
-  tweet.class == Twitter::Tweet ? "Success!" : "Something went wrong..."
+  current_user.tweet(params[:tweet_content])
+end
+
+get '/status/:job_id' do
+  job_is_complete(params[:job_id]) ? "success" : "FAILLLLZZZzzzZZzzZZz" 
 end

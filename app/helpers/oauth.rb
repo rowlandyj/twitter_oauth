@@ -4,7 +4,7 @@ def oauth_consumer
     ENV['TWITTER_KEY'],
     ENV['TWITTER_SECRET'],
     :site => "https://api.twitter.com"
-  )
+    )
 end
 
 def request_token
@@ -16,7 +16,7 @@ def request_token
     # the `oauth_consumer` method is defined above
     session[:request_token] = oauth_consumer.get_request_token(
       :oauth_callback => "http://#{host_and_port}/auth"
-    )
+      )
   end
   session[:request_token]
 end
@@ -32,6 +32,16 @@ helpers do
   # Returns true if current_user exists, false otherwise
   def logged_in?
     !current_user.nil?
+  end
+
+  def job_is_complete(jid)
+    waiting = Sidekiq::Queue.new
+    working = Sidekiq::Workers.new
+    pending = Sidekiq::ScheduledSet.new
+    return false if pending.find { |job| job.jid == jid }
+    return false if waiting.find { |job| job.jid == jid }
+    return false if working.find { |worker, info| info["payload"]["jid"] == jid }
+    true
   end
 
 end
