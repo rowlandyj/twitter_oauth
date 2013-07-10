@@ -1,5 +1,9 @@
 get '/' do
-  erb :index
+  if logged_in?
+    redirect "/new_tweet"
+  else
+    erb :index
+  end
 end
 
 get '/sign_in' do
@@ -34,9 +38,6 @@ end
 
 post '/new_tweet' do
   user = User.find(session[:user_id])
-  puts '---------'
-  puts user.id
-  puts '---------'
   tweet_content = params[:tweet_content]
   tweet = Twitter::Client.new(
   :oauth_token => user.oauth_token,
